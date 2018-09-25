@@ -57,7 +57,7 @@ class SlideBar : View, LetterSelectBarObservable {
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(it, R.styleable.SlideBar)
             selectedColor = typedArray.getColor(R.styleable.SlideBar_selectedColor, Color.parseColor("#F66220"))
-
+            typedArray.recycle()
         }
     }
 
