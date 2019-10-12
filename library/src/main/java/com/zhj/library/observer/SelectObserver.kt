@@ -11,7 +11,7 @@ interface SelectObserver {
     fun updateLetter(letter:String)
 
     /**
-     * 选中某个字母
+     * 手指抬起选中某个字母
      */
     fun upSelect(selectedLetter:String)
 }

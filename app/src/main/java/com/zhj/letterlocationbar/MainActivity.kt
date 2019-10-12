@@ -1,6 +1,6 @@
 package com.zhj.letterlocationbar
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
@@ -17,7 +17,7 @@ import com.zhj.library.observer.SelectObserver
 import com.zhj.library.util.SmoothUtil.smoothToSpecificPosition
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
     private var strList = arrayOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")
     private val handler: Handler = Handler()
     private val runnable = Runnable {

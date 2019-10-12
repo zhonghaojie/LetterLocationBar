@@ -49,6 +49,7 @@ class SlideBar : View, LetterSelectBarObservable {
     private var notSelectedColor = Color.parseColor("#c1c1c1")
     private var selectedColor = Color.parseColor("#F66220")
     private val circlePaint = Paint(ANTI_ALIAS_FLAG)
+    private val topRadius = 10
 
     constructor(context: Context) : this(context, null, 0, 0)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0, 0)
@@ -67,12 +68,13 @@ class SlideBar : View, LetterSelectBarObservable {
 
         var textSize = SizeUtil.dp2px(context, 10).toFloat()
         paint.textSize = textSize
-        val cornerSize = SizeUtil.dp2px(context, 10)//圆角背景的radius
-        val space = (measuredHeight - cornerSize * 2) / 26//每个字母所在矩形的高度
+        val cornerSize = SizeUtil.dp2px(context, topRadius)//圆角背景的radius
+        val space = (measuredHeight - cornerSize * 2) / 26//每个字母所在矩形的高度，要先减去上下两个圆角的高度
 
         canvas?.let {
             circlePaint.color = selectedColor
             circlePaint.style = Paint.Style.FILL
+            //画最上面那个橙色的点
             it.drawCircle((measuredWidth / 2).toFloat(), (cornerSize).toFloat(), (cornerSize / 2).toFloat(), circlePaint)
             strList.forEachIndexed { index, s ->
                 //选中状态
@@ -100,19 +102,19 @@ class SlideBar : View, LetterSelectBarObservable {
             when (it.action) {
                 MotionEvent.ACTION_DOWN -> {
                     currentY = it.y
-                    val selected = caculate(it.y)
+                    val selected = calculate(it.y)
                     if(!selected.isNullOrEmpty()){
                         notify(selected)
                     }
                 }
                 MotionEvent.ACTION_UP -> {
                     currentY = it.y
-                    val selected = caculate(it.y)
+                    val selected = calculate(it.y)
                     upSelect(selected)
                 }
                 MotionEvent.ACTION_MOVE -> {
                     currentY = it.y
-                    val selected = caculate(it.y)
+                    val selected = calculate(it.y)
                     if(!selected.isNullOrEmpty()){
                         notify(selected)
                     }
@@ -136,8 +138,8 @@ class SlideBar : View, LetterSelectBarObservable {
     /**
      * 计算手指位置对应的字母
      */
-    private fun caculate(y: Float): String {
-        val cornerSize = SizeUtil.dp2px(context, 10)//圆角背景的radius
+    private fun calculate(y: Float): String {
+        val cornerSize = SizeUtil.dp2px(context, topRadius)//圆角背景的radius
         val space = (measuredHeight - cornerSize * 2) / 26
         var result = ""
         for (i in 0 until strList.size) {
