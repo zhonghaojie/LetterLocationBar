@@ -14,7 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.github.promeg.pinyinhelper.Pinyin
 import com.zhj.library.observer.SelectObserver
-import com.zhj.library.util.SmoothUtil.smoothToSpecificPosition
+import com.zhj.library.util.SmoothUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : Activity() {
@@ -32,7 +32,7 @@ class MainActivity : Activity() {
     val observer: SelectObserver = object : SelectObserver {
         override fun upSelect(letter:String) {
             val position = adapter.letterList.indexOf(letter)
-            smoothToSpecificPosition(recycler_view,position)
+            SmoothUtil.smoothToSpecificPosition(recycler_view,position)
             handler.postDelayed(runnable, 2000)
         }
 

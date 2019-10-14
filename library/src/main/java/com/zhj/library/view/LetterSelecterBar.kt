@@ -12,7 +12,6 @@ import android.view.View
 import com.zhj.library.R
 import com.zhj.library.observer.LetterSelectBarObservable
 import com.zhj.library.observer.SelectObserver
-import com.zhj.library.util.SizeUtil
 import java.util.*
 
 /**
@@ -20,7 +19,10 @@ import java.util.*
  * 我的理解为：手指抬起来的时候，表示选中了某个字母，点下去或者滑动的时候，只改变指示器上显示的字母
  * Created by zhonghaojie on 2018/9/18.
  */
-class SlideBar : View, LetterSelectBarObservable {
+class LetterSelecterBar : View, LetterSelectBarObservable {
+
+    private var textSize = 10
+
     override fun upSelect(selectedLetter:String) {
         observers.forEach { it.upSelect(selectedLetter) }
     }
@@ -50,14 +52,17 @@ class SlideBar : View, LetterSelectBarObservable {
     private var selectedColor = Color.parseColor("#F66220")
     private val circlePaint = Paint(ANTI_ALIAS_FLAG)
     private val topRadius = 10
+    private var cornerSize = topRadius//圆角背景的radius
 
     constructor(context: Context) : this(context, null, 0, 0)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
         attrs?.let {
-            val typedArray = context.obtainStyledAttributes(it, R.styleable.SlideBar)
-            selectedColor = typedArray.getColor(R.styleable.SlideBar_selectedColor, Color.parseColor("#F66220"))
+            val typedArray = context.obtainStyledAttributes(it, R.styleable.LetterSelecterBar)
+            selectedColor = typedArray.getColor(R.styleable.LetterSelecterBar_selectedColor, Color.parseColor("#F66220"))
+            textSize = typedArray.getDimensionPixelSize(R.styleable.LetterSelecterBar_textSize,10)
+            cornerSize = typedArray.getDimensionPixelSize(R.styleable.LetterSelecterBar_corner,topRadius)
             typedArray.recycle()
         }
     }
@@ -66,9 +71,7 @@ class SlideBar : View, LetterSelectBarObservable {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        var textSize = SizeUtil.dp2px(context, 10).toFloat()
-        paint.textSize = textSize
-        val cornerSize = SizeUtil.dp2px(context, topRadius)//圆角背景的radius
+        paint.textSize = textSize.toFloat()
         val space = (measuredHeight - cornerSize * 2) / 26//每个字母所在矩形的高度，要先减去上下两个圆角的高度
 
         canvas?.let {
@@ -139,7 +142,6 @@ class SlideBar : View, LetterSelectBarObservable {
      * 计算手指位置对应的字母
      */
     private fun calculate(y: Float): String {
-        val cornerSize = SizeUtil.dp2px(context, topRadius)//圆角背景的radius
         val space = (measuredHeight - cornerSize * 2) / 26
         var result = ""
         for (i in 0 until strList.size) {
@@ -154,7 +156,7 @@ class SlideBar : View, LetterSelectBarObservable {
                 break
             }
         }
-        Log.i("SlideBar", result)
+        Log.i("LetterSelecterBar", result)
         return result
     }
 }

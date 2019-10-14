@@ -21,10 +21,12 @@
         android:textSize="20sp"
         android:visibility="gone" />
 
-    <com.zhj.library.view.SlideBar
+    <com.zhj.library.view.LetterSelecterBar
         android:id="@+id/slide_bar"
         android:layout_width="25dp"
         android:layout_height="match_parent"
+        app:textSize="14sp"
+        app:corner="10dp"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
