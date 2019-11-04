@@ -81,9 +81,9 @@ class CircleSelecterBar : View, CircleSelectorObservable {
             bigCircleStroke = typedArray.getDimensionPixelSize(R.styleable.CircleSelecterBar_big_circle_stroke_width, Color.GRAY)
             circlePadding = typedArray.getDimensionPixelSize(R.styleable.CircleSelecterBar_circle_padding, 20)
             bigCircleStrokeColor = typedArray.getColor(R.styleable.CircleSelecterBar_big_circle_stroke_color, Color.GRAY)
-
-            bigCirclePaint.style = Paint.Style.FILL
-            bigCirclePaint.color = bigCircleColor
+            bigCircleColor =  typedArray.getColor(R.styleable.CircleSelecterBar_big_circle_color, Color.GRAY)
+            paint.color = circleColor
+            paint.style = Paint.Style.FILL
             typedArray.recycle()
         }
     }
@@ -100,11 +100,15 @@ class CircleSelecterBar : View, CircleSelectorObservable {
     override fun onDraw(canvas: Canvas?) {
 
         canvas?.let {
-            paint.color = circleColor
-            paint.style = Paint.Style.FILL
-            //画最上面那个橙色的点
-            it.drawCircle(measuredWidth / 2f, currentY, bigCircleSize / 2f, bigCirclePaint)
-            var centerY = bigCircleSize / 2f
+
+            bigCirclePaint.style = Paint.Style.FILL
+            bigCirclePaint.color = bigCircleColor
+            it.drawCircle(measuredWidth / 2f, currentY, bigCircleSize / 2f - bigCircleStroke.toFloat()/2f, bigCirclePaint)
+            bigCirclePaint.style = Paint.Style.STROKE
+            bigCirclePaint.color = bigCircleStrokeColor
+            bigCirclePaint.strokeWidth = bigCircleStroke.toFloat()
+            it.drawCircle(measuredWidth / 2f, currentY,bigCircleSize / 2f- bigCircleStroke.toFloat()/2f,bigCirclePaint)
+            var centerY = bigCircleSize / 2f + bigCircleStroke
             (0..circleCount).forEachIndexed { index, s ->
                 //选中状态
                 val radius = if (selectTop <= (centerY - circleSize / 2f) && selectBottom >= (centerY + circleSize / 2f)) {
@@ -122,6 +126,7 @@ class CircleSelecterBar : View, CircleSelectorObservable {
                     return
                 }else {
                     lastCircleCenterY = centerY
+
                     it.drawCircle(measuredWidth / 2f, centerY.toFloat(), radius, paint)
                     centerY += circlePadding + circleSize
                 }
