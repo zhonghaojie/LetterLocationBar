@@ -6,4 +6,18 @@
         <attr name="textSize" format="dimension"/>
         <attr name="corner" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="CircleSelecterBar">
+        <attr name="circle_size" format="dimension"/>
+        <attr name="circle_color" format="color"/>
+        <attr name="circle_count" format="integer"/>
+        <attr name="big_circle_size" format="dimension"/>
+        <attr name="big_circle_color" format="color"/>
+        <attr name="big_circle_stroke_color" format="color"/>
+        <attr name="big_circle_stroke_width" format="dimension"/>
+        <attr name="circle_padding" format="dimension"/>
+
+    </declare-styleable>
+
+
 </resources>

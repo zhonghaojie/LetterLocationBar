@@ -1,4 +1,4 @@
-package com.zhj.library.util
+package com.zhj.letterlocationbar.util
 import android.support.v7.widget.RecyclerView
 
 /**

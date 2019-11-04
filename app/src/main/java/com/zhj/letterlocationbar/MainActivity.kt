@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +16,8 @@ import android.widget.TextView
 import android.widget.Toast
 import com.github.promeg.pinyinhelper.Pinyin
 import com.zhj.library.observer.SelectObserver
-import com.zhj.library.util.SmoothUtil
+import com.zhj.letterlocationbar.util.SmoothUtil
+import com.zhj.library.view.circleselecterbar.CircleSelectorObserver
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : Activity() {
@@ -22,21 +25,24 @@ class MainActivity : Activity() {
     private val handler: Handler = Handler()
     private val runnable = Runnable {
 
-        val animate=AlphaAnimation(1f,0f)
-        animate.duration=200
-        animate.interpolator=LinearInterpolator()
+        val animate = AlphaAnimation(1f, 0f)
+        animate.duration = 200
+        animate.interpolator = LinearInterpolator()
         tv_selected_letter.startAnimation(animate)
-        tv_selected_letter.visibility=View.GONE
+        tv_selected_letter.visibility = View.GONE
         slide_bar.clear()
     }
     val observer: SelectObserver = object : SelectObserver {
-        override fun upSelect(letter:String) {
+        override fun upSelect(letter: String) {
             val position = adapter.letterList.indexOf(letter)
-            SmoothUtil.smoothToSpecificPosition(recycler_view,position)
+            recycler_view.stopScroll()
+            SmoothUtil.smoothToSpecificPosition(recycler_view, position)
             handler.postDelayed(runnable, 2000)
         }
 
         override fun updateLetter(letter: String) {
+            val position = adapter.letterList.indexOf(letter)
+            recycler_view.smoothScrollToPosition(position)
             tv_selected_letter.text = letter
             tv_selected_letter.alpha = 1f
             tv_selected_letter.visibility = View.VISIBLE
@@ -56,6 +62,7 @@ class MainActivity : Activity() {
     }
 
     private lateinit var adapter: MyAdapter
+    private var isScrollFromTouch=true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,6 +70,14 @@ class MainActivity : Activity() {
         adapter = MyAdapter(getData())
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
+        circle_selector.bindRecyclerView(recycler_view)
+        circle_selector.registerObserver(object : CircleSelectorObserver {
+            override fun upSelect(percent: String) {
+                isScrollFromTouch = false
+                Log.i("circle_selector", percent)
+                recycler_view.smoothScrollToPosition(((percent.toFloat() * adapter.list.size).toInt()))
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -93,7 +108,7 @@ class MainActivity : Activity() {
             fun bind(letter: String) {
                 tv.text = letter
                 view.setOnClickListener {
-                    Toast.makeText(tv.context,letter,Toast.LENGTH_SHORT).show()
+                    Toast.makeText(tv.context, letter, Toast.LENGTH_SHORT).show()
                 }
             }
         }

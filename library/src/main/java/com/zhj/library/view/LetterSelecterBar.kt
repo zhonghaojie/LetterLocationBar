@@ -82,8 +82,10 @@ class LetterSelecterBar : View, LetterSelectBarObservable {
             strList.forEachIndexed { index, s ->
                 //选中状态
                 if (currentIndex == index) {
+                    paint.textSize = textSize*1.6f
                     paint.color = selectedColor
                 } else {
+                    paint.textSize = textSize.toFloat()
                     paint.color = notSelectedColor
                 }
                 val array = FloatArray(1)
