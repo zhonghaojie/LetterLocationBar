@@ -109,11 +109,11 @@ class CircleSelecterBar : View, CircleSelectorObservable {
             bigCirclePaint.strokeWidth = bigCircleStroke.toFloat()
             it.drawCircle(measuredWidth / 2f, currentY,bigCircleSize / 2f- bigCircleStroke.toFloat()/2f,bigCirclePaint)
             var centerY = bigCircleSize / 2f + bigCircleStroke
-            (0..circleCount).forEachIndexed { index, s ->
+            (0 until circleCount).forEachIndexed { index, s ->
                 //选中状态
                 val radius = if (selectTop <= (centerY - circleSize / 2f) && selectBottom >= (centerY + circleSize / 2f)) {
                     if (drawBigCircleWithTouchMove) {
-                        observers.forEach { it.upSelect(remain2(index.toFloat() / circleCount.toFloat())) }
+                        observers.forEach { it.upSelect(remain2(index.toFloat() / (circleCount-1).toFloat())) }
                     }
                     circleSize / 1.2f
                 } else {
