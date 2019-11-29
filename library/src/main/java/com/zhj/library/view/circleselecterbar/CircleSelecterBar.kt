@@ -132,6 +132,9 @@ class CircleSelecterBar : View, CircleSelectorObservable {
 
     private var currentAction = -1
     private fun onSelect(selectedPositionList : ArrayList<Int>) {
+        if(!drawBigCircleWithTouchMove){
+            return
+        }
         //由于大圈可能会包含多个小圆，所以这里加了判断
         if(selectedPositionList.isEmpty()){
             return
