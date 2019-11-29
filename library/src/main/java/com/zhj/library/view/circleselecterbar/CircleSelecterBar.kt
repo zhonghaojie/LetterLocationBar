@@ -68,7 +68,6 @@ class CircleSelecterBar : View, CircleSelectorObservable {
             }
         }
     var drawBigCircleWithTouchMove = true//画大圆是否根据手指来
-
     constructor(context: Context) : this(context, null, 0, 0)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
@@ -81,7 +80,7 @@ class CircleSelecterBar : View, CircleSelectorObservable {
             bigCircleStroke = typedArray.getDimensionPixelSize(R.styleable.CircleSelecterBar_big_circle_stroke_width, Color.GRAY)
             circlePadding = typedArray.getDimensionPixelSize(R.styleable.CircleSelecterBar_circle_padding, 20)
             bigCircleStrokeColor = typedArray.getColor(R.styleable.CircleSelecterBar_big_circle_stroke_color, Color.GRAY)
-            bigCircleColor =  typedArray.getColor(R.styleable.CircleSelecterBar_big_circle_color, Color.GRAY)
+            bigCircleColor = typedArray.getColor(R.styleable.CircleSelecterBar_big_circle_color, Color.GRAY)
             paint.color = circleColor
             paint.style = Paint.Style.FILL
             typedArray.recycle()
@@ -103,41 +102,60 @@ class CircleSelecterBar : View, CircleSelectorObservable {
 
             bigCirclePaint.style = Paint.Style.FILL
             bigCirclePaint.color = bigCircleColor
-            it.drawCircle(measuredWidth / 2f, currentY, bigCircleSize / 2f - bigCircleStroke.toFloat()/2f, bigCirclePaint)
+            it.drawCircle(measuredWidth / 2f, currentY, bigCircleSize / 2f - bigCircleStroke.toFloat() / 2f, bigCirclePaint)
             bigCirclePaint.style = Paint.Style.STROKE
             bigCirclePaint.color = bigCircleStrokeColor
             bigCirclePaint.strokeWidth = bigCircleStroke.toFloat()
-            it.drawCircle(measuredWidth / 2f, currentY,bigCircleSize / 2f- bigCircleStroke.toFloat()/2f,bigCirclePaint)
+            it.drawCircle(measuredWidth / 2f, currentY, bigCircleSize / 2f - bigCircleStroke.toFloat() / 2f, bigCirclePaint)
+            val selectedPositionList = ArrayList<Int>()
             var centerY = bigCircleSize / 2f + bigCircleStroke
             (0 until circleCount).forEachIndexed { index, s ->
                 //选中状态
                 val radius = if (selectTop <= (centerY - circleSize / 2f) && selectBottom >= (centerY + circleSize / 2f)) {
-                    if (drawBigCircleWithTouchMove) {
-                        observers.forEach { it.upSelect(remain2(index.toFloat() / (circleCount-1).toFloat())) }
-                    }
+                    selectedPositionList.add(index)
                     circleSize / 1.2f
                 } else {
                     circleSize / 2f
                 }
+                val nextSpace = Math.max(circlePadding + circleSize.toFloat(), bigCircleSize / 2f)
 
-                val nextSpace = Math.max(circlePadding + circleSize.toFloat(),bigCircleSize/2f)
-
-                if (centerY+nextSpace >= (measuredHeight)) {
-                    return
-                }else {
+                if (centerY + nextSpace < (measuredHeight)) {
                     lastCircleCenterY = centerY
-
                     it.drawCircle(measuredWidth / 2f, centerY.toFloat(), radius, paint)
                     centerY += circlePadding + circleSize
                 }
             }
+            onSelect(selectedPositionList)
         }
+
+    }
+
+    private var currentAction = -1
+    private fun onSelect(selectedPositionList : ArrayList<Int>) {
+        //由于大圈可能会包含多个小圆，所以这里加了判断
+        if(selectedPositionList.isEmpty()){
+            return
+        }
+        if(selectedPositionList.size == 1){//size  1没什么好说的
+            observers.forEach { it.upSelect(remain2(selectedPositionList[0].toFloat() / (circleCount - 1).toFloat())) }
+        }else {
+            if(selectedPositionList[selectedPositionList.size-1] == circleCount-1){
+                //如果待选列表中包含最后一个小圆，则说明到底了
+                observers.forEach { it.upSelect(remain2(selectedPositionList[selectedPositionList.size-1].toFloat() / (circleCount - 1).toFloat())) }
+            }else{
+                //其他情况就取第一个小圆的index
+                observers.forEach { it.upSelect(remain2(selectedPositionList[0].toFloat() / (circleCount - 1).toFloat())) }
+            }
+        }
+
     }
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         drawBigCircleWithTouchMove = true
+
         event?.let {
+            currentAction = it.action
             when (it.action) {
                 MotionEvent.ACTION_DOWN -> {
                     calculate(it)
@@ -168,11 +186,10 @@ class CircleSelecterBar : View, CircleSelectorObservable {
     }
 
 
-
     /**
      * 计算RecyclerView滚动状态下大圆位置
      */
-    private fun changeFromOutside(topVisiblePosition: Int,lastVisiblePosition:Int, totalSize: Int) {
+    private fun changeFromOutside(topVisiblePosition: Int, lastVisiblePosition: Int, totalSize: Int) {
         drawBigCircleWithTouchMove = false
         if (totalSize == 0) {
             return
@@ -184,7 +201,7 @@ class CircleSelecterBar : View, CircleSelectorObservable {
             invalidate()
             return
         }
-        if(lastVisiblePosition == totalSize -1){
+        if (lastVisiblePosition == totalSize - 1) {
             currentY = lastCircleCenterY
             selectTop = currentY - bigCircleSize / 2f
             selectBottom = currentY + bigCircleSize / 2f
@@ -220,12 +237,13 @@ class CircleSelecterBar : View, CircleSelectorObservable {
                         recyclerView?.layoutManager is GridLayoutManager -> (recyclerView.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
                         else -> 0
                     }
-                    val lastVisiblePosition =  when {
+                    val lastVisiblePosition = when {
                         recyclerView?.layoutManager is LinearLayoutManager -> (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                         recyclerView?.layoutManager is GridLayoutManager -> (recyclerView.layoutManager as GridLayoutManager).findLastVisibleItemPosition()
                         else -> recyclerView?.adapter?.itemCount ?: 0
                     }
-                    changeFromOutside(position, lastVisiblePosition,recyclerView?.adapter?.itemCount ?: 0)
+                    changeFromOutside(position, lastVisiblePosition, recyclerView?.adapter?.itemCount
+                            ?: 0)
                 }
 
             }

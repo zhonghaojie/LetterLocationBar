@@ -33,11 +33,9 @@ class MainActivity : Activity() {
         slide_bar.clear()
     }
     val observer: SelectObserver = object : SelectObserver {
-        override fun upSelect(letter: String) {
-            val position = adapter.letterList.indexOf(letter)
+        override fun upSelect(percent: String) {
             recycler_view.stopScroll()
-            SmoothUtil.smoothToSpecificPosition(recycler_view, position)
-            handler.postDelayed(runnable, 2000)
+            SmoothUtil.smoothToSpecificPosition(recycler_view,  ((percent.toFloat() * (adapter.itemCount)).toInt()))
         }
 
         override fun updateLetter(letter: String) {
@@ -70,8 +68,8 @@ class MainActivity : Activity() {
         adapter = MyAdapter(getData())
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
-        circle_selector.bindRecyclerView(recycler_view)
-        circle_selector.registerObserver(object : CircleSelectorObserver {
+        select_bar.bindRecyclerView(recycler_view)
+        select_bar.registerObserver(object : CircleSelectorObserver {
             override fun upSelect(percent: String) {
                 isScrollFromTouch = false
                 Log.i("circle_selector", percent)
