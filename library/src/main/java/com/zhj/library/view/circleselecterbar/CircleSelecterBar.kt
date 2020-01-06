@@ -240,7 +240,7 @@ class CircleSelecterBar : View, CircleSelectorObservable {
                         recyclerView?.layoutManager is LinearLayoutManager -> (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                         recyclerView?.layoutManager is GridLayoutManager -> (recyclerView.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
                         recyclerView?.layoutManager is StaggeredGridLayoutManager -> {
-                            val array = emptyArray<Int>().toIntArray()
+                            val array = IntArray((recyclerView.layoutManager as StaggeredGridLayoutManager).spanCount)
                             (recyclerView.layoutManager as StaggeredGridLayoutManager).findFirstVisibleItemPositions(array)
                             if(array.isNotEmpty()){
                                 array.min()?:0
@@ -254,7 +254,7 @@ class CircleSelecterBar : View, CircleSelectorObservable {
                         recyclerView?.layoutManager is LinearLayoutManager -> (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                         recyclerView?.layoutManager is GridLayoutManager -> (recyclerView.layoutManager as GridLayoutManager).findLastVisibleItemPosition()
                         recyclerView?.layoutManager is StaggeredGridLayoutManager -> {
-                            val array = emptyArray<Int>().toIntArray()
+                            val array = IntArray((recyclerView.layoutManager as StaggeredGridLayoutManager).spanCount)
                             (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(array)
                             if(array.isNotEmpty()){
                                 array.max()?:0
