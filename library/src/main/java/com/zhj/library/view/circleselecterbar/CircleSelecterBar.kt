@@ -243,7 +243,7 @@ class CircleSelecterBar : View, CircleSelectorObservable {
                             val array = emptyArray<Int>().toIntArray()
                             (recyclerView.layoutManager as StaggeredGridLayoutManager).findFirstVisibleItemPositions(array)
                             if(array.isNotEmpty()){
-                                array.max()?:0
+                                array.min()?:0
                             }else{
                                 0
                             }
