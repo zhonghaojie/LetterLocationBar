@@ -10,6 +10,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -238,11 +239,29 @@ class CircleSelecterBar : View, CircleSelectorObservable {
                     val position = when {
                         recyclerView?.layoutManager is LinearLayoutManager -> (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                         recyclerView?.layoutManager is GridLayoutManager -> (recyclerView.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
+                        recyclerView?.layoutManager is StaggeredGridLayoutManager -> {
+                            val array = emptyArray<Int>().toIntArray()
+                            (recyclerView.layoutManager as StaggeredGridLayoutManager).findFirstVisibleItemPositions(array)
+                            if(array.isNotEmpty()){
+                                array[0]
+                            }else{
+                                0
+                            }
+                        }
                         else -> 0
                     }
                     val lastVisiblePosition = when {
                         recyclerView?.layoutManager is LinearLayoutManager -> (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                         recyclerView?.layoutManager is GridLayoutManager -> (recyclerView.layoutManager as GridLayoutManager).findLastVisibleItemPosition()
+                        recyclerView?.layoutManager is StaggeredGridLayoutManager -> {
+                            val array = emptyArray<Int>().toIntArray()
+                            (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(array)
+                            if(array.isNotEmpty()){
+                                array[0]
+                            }else{
+                                0
+                            }
+                        }
                         else -> recyclerView?.adapter?.itemCount ?: 0
                     }
                     changeFromOutside(position, lastVisiblePosition, recyclerView?.adapter?.itemCount
